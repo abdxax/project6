@@ -1,15 +1,17 @@
 package com.example.abdulrahman.project6;
 
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
+
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -34,8 +36,18 @@ ListView listView;
         setContentView(R.layout.activity_main);
         news=new ArrayList<>();
         listView=findViewById(R.id.newsList);
-        String url="http://content.guardianapis.com/search?q=debates&api-key=test";
-        new NewsJson().execute(url);
+        ConnectivityManager manager= (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo info=manager.getActiveNetworkInfo();
+        if (info!=null && info.isConnected()){
+            String url="http://content.guardianapis.com/search?&show-tags=contributor&q=debates&api-key=test";
+            new NewsJson().execute(url);
+        }
+        else{
+            Intent showmsg=new Intent(MainActivity.this,Main2Activity.class);
+            showmsg.putExtra("msg","No network is available  ");
+            startActivity(showmsg);
+            finish();
+        }
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -46,9 +58,6 @@ ListView listView;
                 }
             }
         });
-
-
-
     }
 
     public class NewsJson extends AsyncTask<String , String,String>{
@@ -62,16 +71,27 @@ ListView listView;
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-          if (s!=null){
+          if (s!=""){
               try {
 
                   JSONObject object=new JSONObject(s);
                   JSONObject response=object.getJSONObject("response");
                   JSONArray array=response.getJSONArray("results");
+                  String name="";
+
                   for (int i=0;i<array.length();i++){
                       JSONObject newsObject=array.getJSONObject(i);
+                      try {
+                          JSONArray profile=newsObject.getJSONArray("tags");
+                          JSONObject nameobject=profile.getJSONObject(0);
+                          name=nameobject.getString("firstName")+" "+nameobject.getString("lastName");
+
+                      }
+                      catch (Exception e) {
+                          e.printStackTrace();
+                      }
                       news.add(new News(newsObject.getString("webTitle"),newsObject.getString("sectionName"),newsObject.getString("webPublicationDate"),
-                              newsObject.getString("webUrl")));
+                              newsObject.getString("webUrl"),name));
                      // Log.d("ERROR",newsObject.getString("webTitle"));
                   }
                   NewsAdapter newsAdapter=new NewsAdapter(getApplicationContext(),news);
@@ -82,6 +102,10 @@ ListView listView;
           }
           else{
               Toast.makeText(getApplicationContext(),"Json is empty",Toast.LENGTH_LONG).show();
+              Intent showmsg=new Intent(MainActivity.this,Main2Activity.class);
+              showmsg.putExtra("msg","No data display");
+              startActivity(showmsg);
+              finish();
           }
         }
 
