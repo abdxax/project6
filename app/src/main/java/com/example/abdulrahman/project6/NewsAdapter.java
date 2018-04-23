@@ -19,19 +19,19 @@ public class NewsAdapter extends ArrayAdapter<News> {
     ArrayList<News> news;
 
     public NewsAdapter(@NonNull Context context, ArrayList<News> news) {
-        super(context, 0,news);
-        this.news=news;
+        super(context, 0, news);
+        this.news = news;
     }
 
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        LayoutInflater layoutInflater=LayoutInflater.from(getContext());
-        View view=layoutInflater.inflate(R.layout.list_news,parent,false);
-        TextView title=view.findViewById(R.id.title);
-        TextView section=view.findViewById(R.id.section);
-        TextView date=view.findViewById(R.id.date);
-        TextView name=view.findViewById(R.id.name);
+        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+        View view = layoutInflater.inflate(R.layout.list_news, parent, false);
+        TextView title = view.findViewById(R.id.title);
+        TextView section = view.findViewById(R.id.section);
+        TextView date = view.findViewById(R.id.date);
+        TextView name = view.findViewById(R.id.name);
         title.setText(news.get(position).getTitle());
         section.setText(news.get(position).getSection());
         date.setText(news.get(position).getDate());

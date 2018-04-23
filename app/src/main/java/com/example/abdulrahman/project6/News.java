@@ -8,16 +8,16 @@ public class News {
     private String title;
     private String Section;
     private String date;
-    private  String url;
+    private String url;
     private String name;
 
 
-    public News(String title, String section, String date,String url,String naem) {
+    public News(String title, String section, String date, String url, String naem) {
         this.title = title;
         Section = section;
         this.date = date;
-        this.url=url;
-        this.name=naem;
+        this.url = url;
+        this.name = naem;
     }
 
     public String getTitle() {

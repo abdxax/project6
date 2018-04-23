@@ -28,23 +28,23 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-ArrayList<News> news;
-ListView listView;
+    ArrayList<News> news;
+    ListView listView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        news=new ArrayList<>();
-        listView=findViewById(R.id.newsList);
-        ConnectivityManager manager= (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-        NetworkInfo info=manager.getActiveNetworkInfo();
-        if (info!=null && info.isConnected()){
-            String url="http://content.guardianapis.com/search?&show-tags=contributor&q=debates&api-key=test";
+        news = new ArrayList<>();
+        listView = findViewById(R.id.newsList);
+        ConnectivityManager manager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo info = manager.getActiveNetworkInfo();
+        if (info != null && info.isConnected()) {
+            String url = "http://content.guardianapis.com/search?&show-tags=contributor&q=debates&api-key=test";
             new NewsJson().execute(url);
-        }
-        else{
-            Intent showmsg=new Intent(MainActivity.this,Main2Activity.class);
-            showmsg.putExtra("msg","No network is available  ");
+        } else {
+            Intent showmsg = new Intent(MainActivity.this, Main2Activity.class);
+            showmsg.putExtra("msg", "No network is available  ");
             startActivity(showmsg);
             finish();
         }
@@ -60,7 +60,7 @@ ListView listView;
         });
     }
 
-    public class NewsJson extends AsyncTask<String , String,String>{
+    public class NewsJson extends AsyncTask<String, String, String> {
 
 
         @Override
@@ -71,42 +71,48 @@ ListView listView;
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-          if (s!=""){
-              try {
+            if (s == null) {
+                Toast.makeText(getApplicationContext(), "Json is empty", Toast.LENGTH_LONG).show();
+                Intent showmsg = new Intent(MainActivity.this, Main2Activity.class);
+                showmsg.putExtra("msg", "No data display");
+                startActivity(showmsg);
+                finish();
+            } else {
+                try {
 
-                  JSONObject object=new JSONObject(s);
-                  JSONObject response=object.getJSONObject("response");
-                  JSONArray array=response.getJSONArray("results");
-                  String name="";
+                    JSONObject object = new JSONObject(s);
+                    JSONObject response = object.getJSONObject("response");
+                    JSONArray array = response.getJSONArray("results");
+                    String name = "";
+                    if (array.length() > 0) {
+                        for (int i = 0; i < array.length(); i++) {
+                            JSONObject newsObject = array.getJSONObject(i);
+                            try {
+                                JSONArray profile = newsObject.getJSONArray("tags");
+                                JSONObject nameobject = profile.getJSONObject(0);
+                                name = nameobject.getString("firstName") + " " + nameobject.getString("lastName");
 
-                  for (int i=0;i<array.length();i++){
-                      JSONObject newsObject=array.getJSONObject(i);
-                      try {
-                          JSONArray profile=newsObject.getJSONArray("tags");
-                          JSONObject nameobject=profile.getJSONObject(0);
-                          name=nameobject.getString("firstName")+" "+nameobject.getString("lastName");
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            news.add(new News(newsObject.getString("webTitle"), newsObject.getString("sectionName"), newsObject.getString("webPublicationDate"),
+                                    newsObject.getString("webUrl"), name));
+                            // Log.d("ERROR",newsObject.getString("webTitle"));
+                        }
+                        NewsAdapter newsAdapter = new NewsAdapter(getApplicationContext(), news);
+                        listView.setAdapter(newsAdapter);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Json is empty", Toast.LENGTH_LONG).show();
+                        Intent showmsg = new Intent(MainActivity.this, Main2Activity.class);
+                        showmsg.putExtra("msg", "No data display");
+                        startActivity(showmsg);
+                        finish();
+                    }
 
-                      }
-                      catch (Exception e) {
-                          e.printStackTrace();
-                      }
-                      news.add(new News(newsObject.getString("webTitle"),newsObject.getString("sectionName"),newsObject.getString("webPublicationDate"),
-                              newsObject.getString("webUrl"),name));
-                     // Log.d("ERROR",newsObject.getString("webTitle"));
-                  }
-                  NewsAdapter newsAdapter=new NewsAdapter(getApplicationContext(),news);
-                  listView.setAdapter(newsAdapter);
-              } catch (JSONException e) {
-                  e.printStackTrace();
-              }
-          }
-          else{
-              Toast.makeText(getApplicationContext(),"Json is empty",Toast.LENGTH_LONG).show();
-              Intent showmsg=new Intent(MainActivity.this,Main2Activity.class);
-              showmsg.putExtra("msg","No data display");
-              startActivity(showmsg);
-              finish();
-          }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         @Override
@@ -116,17 +122,17 @@ ListView listView;
 
         @Override
         protected String doInBackground(String... urls) {
-            String Json="";
+            String Json = null;
             try {
-                URL url=new URL(urls[0]);
-                HttpURLConnection httpURLConnection=(HttpURLConnection) url.openConnection();
+                URL url = new URL(urls[0]);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
                 httpURLConnection.setRequestMethod("GET");
                 httpURLConnection.setReadTimeout(10000);
                 httpURLConnection.setConnectTimeout(15000);
                 httpURLConnection.connect();
-                if (httpURLConnection.getResponseCode()==200){
-                    InputStream inputStream=httpURLConnection.getInputStream();
-                    Json=News(inputStream);
+                if (httpURLConnection.getResponseCode() == 200) {
+                    InputStream inputStream = httpURLConnection.getInputStream();
+                    Json = News(inputStream);
                 }
             } catch (MalformedURLException e) {
                 e.printStackTrace();
@@ -136,13 +142,13 @@ ListView listView;
             return Json;
         }
 
-        public String News(InputStream inputStream){
-            BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(inputStream));
+        public String News(InputStream inputStream) {
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             String Line;
-            String newsJson="";
+            String newsJson = "";
             try {
-                while ((Line=bufferedReader.readLine())!=null){
-                    newsJson=Line;
+                while ((Line = bufferedReader.readLine()) != null) {
+                    newsJson = Line;
                 }
             } catch (IOException e) {
                 e.printStackTrace();
