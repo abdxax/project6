@@ -10,15 +10,16 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Abdulrahman on 20/04/18.
  */
 
 public class NewsAdapter extends ArrayAdapter<News> {
-    ArrayList<News> news;
+    List<News> news;
 
-    public NewsAdapter(@NonNull Context context, ArrayList<News> news) {
+    public NewsAdapter(@NonNull Context context, List<News> news) {
         super(context, 0, news);
         this.news = news;
     }
