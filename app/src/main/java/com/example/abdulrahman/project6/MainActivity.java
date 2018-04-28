@@ -33,9 +33,6 @@ public class MainActivity extends AppCompatActivity implements android.support.v
         ConnectivityManager manager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo info = manager.getActiveNetworkInfo();
         if (info != null && info.isConnected()) {
-            //String url = "http://content.guardianapis.com/search?&show-tags=contributor&q=debates&api-key=test";
-            // new NewsJson().execute(url);
-            //getSupportLoaderManager().initLoader(0,null,this);
             getSupportLoaderManager().initLoader(0, null, this).forceLoad();
         } else {
             Intent showmsg = new Intent(MainActivity.this, Main2Activity.class);
@@ -48,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements android.support.v
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Uri webpage = Uri.parse(news.get(i).getUrl());
+                Uri webpage = Uri.parse(newsList.get(i).getUrl());
                 Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
                 if (intent.resolveActivity(getPackageManager()) != null) {
                     startActivity(intent);
