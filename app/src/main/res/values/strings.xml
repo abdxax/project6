@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Project6</string>
+    <string name="noData">No Data Display </string>
+    <string name="noIntremt">No network is available</string>
 </resources>

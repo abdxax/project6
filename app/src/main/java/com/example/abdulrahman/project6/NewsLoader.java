@@ -77,7 +77,7 @@ public class NewsLoader extends AsyncTaskLoader<List<News>> {
             }
             newsList.add(new News(newsObject.getString("webTitle"), newsObject.getString("sectionName"), newsObject.getString("webPublicationDate"),
                     newsObject.getString("webUrl"), name));
-            // Log.d("ERROR",newsObject.getString("webTitle"));
+
         }
 
         return newsList;

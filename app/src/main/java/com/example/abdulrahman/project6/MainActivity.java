@@ -13,14 +13,15 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements android.support.v4.app.LoaderManager.LoaderCallbacks<List<News>> {
-    ArrayList<News> news;
     ListView listView;
+    TextView msg;
     NewsAdapter adapter;
     List<News> newsList = new ArrayList<>();
 
@@ -28,17 +29,16 @@ public class MainActivity extends AppCompatActivity implements android.support.v
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        news = new ArrayList<>();
         listView = findViewById(R.id.newsList);
         ConnectivityManager manager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo info = manager.getActiveNetworkInfo();
+        msg = findViewById(R.id.msg);
         if (info != null && info.isConnected()) {
             getSupportLoaderManager().initLoader(0, null, this).forceLoad();
+
         } else {
-            Intent showmsg = new Intent(MainActivity.this, Main2Activity.class);
-            showmsg.putExtra("msg", "No network is available  ");
-            startActivity(showmsg);
-            finish();
+
+            msg.setText(R.string.noIntremt);
         }
         adapter = new NewsAdapter(this, newsList);
         listView.setAdapter(adapter);
@@ -62,10 +62,7 @@ public class MainActivity extends AppCompatActivity implements android.support.v
     @Override
     public void onLoadFinished(Loader<List<News>> loader, List<News> data) {
         if (data.isEmpty()) {
-            Intent showmsg = new Intent(MainActivity.this, Main2Activity.class);
-            showmsg.putExtra("msg", "No data display");
-            startActivity(showmsg);
-            finish();
+            msg.setText(R.string.noData);
         } else {
             newsList = data;
             adapter = new NewsAdapter(this, newsList);
