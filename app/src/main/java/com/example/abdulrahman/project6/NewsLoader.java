@@ -1,12 +1,9 @@
 package com.example.abdulrahman.project6;
-
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
